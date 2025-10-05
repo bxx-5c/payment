@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - DANA, QRIS, GoPay, OVO</title>
+    <style>
+        /* Reset dan variabel CSS */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --dana: #108ee9;
+            --gopay: #00aa13;
+            --ovo: #4c2b87;
+            --qris: #ff6b6b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Container utama */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        /* Kartu pembayaran */
+        .payment-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .payment-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        /* Ikon untuk setiap metode pembayaran */
+        .dana-icon::before {
+            content: "💙";
+        }
+        
+        .ovo-icon::before {
+            content: "💜";
+        }
+        
+        .gopay-icon::before {
+            content: "💚";
+        }
+        
+        .qris-icon::before {
+            content: "🧧";
+        }
+        
+        /* Info pembayaran */
+        .payment-info {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+        
+        .payment-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .payment-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        .payment-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        /* QR Code */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .qr-code:hover {
+            transform: scale(1.05);
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Tombol salin */
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            width: 100%;
+        }
+        
+        /* Responsif */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .payment-card {
+                padding: 1.5rem;
+            }
+            
+            .payment-number {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Payment Gateway</h1>
+        <p>Pilih metode pembayaran yang tersedia di bawah ini</p>
+    </div>
+    
+    <div class="container">
+        <!-- Kartu DANA -->
+        <div class="payment-card">
+            <h2 class="dana-icon">DANA</h2>
+            <div class="payment-info">
+                <h3>Nomor DANA</h3>
+                <div class="payment-number" id="dana-number">08983640582</div>
+                <button class="copy-btn" onclick="copyToClipboard('dana-number')">
+                    Salin Nomor
+                </button>
+            </div>
+        </div>
+        
+        <!-- Kartu OVO -->
+        <div class="payment-card">
+            <h2 class="ovo-icon">OVO</h2>
+            <div class="payment-info">
+                <h3>Nomor OVO</h3>
+                <div class="payment-number" id="ovo-number">08983640582</div>
+                <button class="copy-btn" onclick="copyToClipboard('ovo-number')">
+                    Salin Nomor
+                </button>
+            </div>
+        </div>
+        
+        <!-- Kartu GoPay -->
+        <div class="payment-card">
+            <h2 class="gopay-icon">GoPay</h2>
+            <div class="payment-info">
+                <h3>Nomor GoPay</h3>
+                <div class="payment-number" id="gopay-number">08983640582</div>
+                <button class="copy-btn" onclick="copyToClipboard('gopay-number')">
+                    Salin Nomor
+                </button>
+            </div>
+        </div>
+        
+        <!-- Kartu QRIS -->
+        <div class="payment-card">
+            <h2 class="qris-icon">QRIS</h2>
+            <div class="payment-info">
+                <h3>Scan QR Code di bawah</h3>
+                <div class="qr-container">
+                    <div class="qr-code">
+                        <img src="https://files.catbox.moe/44p2m4.jpg" alt="QR Code">
+                    </div>
+                </div>
+                <p>Scan QR Code di atas untuk melakukan pembayaran</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 Payment Gateway | Semua transaksi aman dan terjamin</p>
+    </div>
+
+    <script>
+        // Fungsi untuk menyalin teks ke clipboard
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.innerText;
+            
+            // Buat elemen textarea sementara
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            
+            // Pilih dan salin teks
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Hapus elemen textarea
+            document.body.removeChild(textarea);
+            
+            // Beri feedback kepada pengguna
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = 'Tersalin!';
+            
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+            }, 2000);
+        }
+        
+        // Animasi smooth saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.payment-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
